@@ -7,6 +7,6 @@ RUN pip install -r /tmp/requirements.txt
 WORKDIR /app
 
 EXPOSE 6000
-Expose 5001
+EXPOSE 5001
 
 CMD python server.py
