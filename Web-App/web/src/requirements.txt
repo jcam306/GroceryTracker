@@ -1,2 +1,3 @@
 pyramid==1.10
 tqdm
+requests
