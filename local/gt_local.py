@@ -9,7 +9,7 @@ USER_ID = 'sikgaek'
 # Your PAT (Personal Access Token) can be found in the portal under Authentification
 PAT = '9f8278ad4e7a4549a7b1f43b9e538ec0'
 APP_ID = 'Grocery-Tracker'
-MODEL_ID = 'aaa03c23b3724a16a56b629203edc62c'
+MODEL_ID = 'food-item-v1-recognition'
 # Change this to whatever image URL you want to process
 folder_loc = r'C:\Users\ihyun\Desktop\GroceryTracker\local\images'
 # This is optional. You can specify a model version or the empty string for the default
