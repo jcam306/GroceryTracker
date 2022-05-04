@@ -60,9 +60,7 @@ def tracking(img):
 
     #for concept in output.data.concepts:
     #   print("%s %.2f" % (concept.name, concept.value))
-
 if __name__ == "__main__":
-
     for img in os.listdir(folder_loc):
         img2 = os.path.join(folder_loc, img)
         data = tracking(img2)

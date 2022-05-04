@@ -2,6 +2,10 @@ from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.response import FileResponse
 
+import os
+import shutil
+import gt_local
+
 def get_home(req):
   return FileResponse("home.html")
 
@@ -11,12 +15,17 @@ def receive_file(request):
         for im in images:
             name = im.filename
             f = im.file
-            print(name)
-            
-    #extract images from request
-    #pass to classifier
-    #store results in db
-    return ['hi']
+            file_path = os.path.join('/app/public/images/received', name)
+            temp_file_path = file_path + '~'
+            f.seek(0)
+            with open(temp_file_path, 'wb') as output_file:
+                shutil.copyfileobj(f, output_file)
+            os.rename(temp_file_path, file_path)
+            d = gt_local.tracking(file_path)
+            print(d)
+
+    #Todo:store results in db
+    return {'error':'none'}
 
 ''' Route Configurations '''
 if __name__ == '__main__':
