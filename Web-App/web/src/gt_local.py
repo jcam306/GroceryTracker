@@ -9,7 +9,7 @@ USER_ID = 'sikgaek'
 # Your PAT (Personal Access Token) can be found in the portal under Authentification
 PAT = '9f8278ad4e7a4549a7b1f43b9e538ec0'
 APP_ID = 'Grocery-Tracker'
-MODEL_ID = 'food-item-v1-recognition'
+MODEL_ID = 'aaa03c23b3724a16a56b629203edc62c'
 # Change this to whatever image URL you want to process
 folder_loc = r'C:\Users\ihyun\Desktop\GroceryTracker\local\images'
 # This is optional. You can specify a model version or the empty string for the default
@@ -60,9 +60,7 @@ def tracking(img):
 
     #for concept in output.data.concepts:
     #   print("%s %.2f" % (concept.name, concept.value))
-
 if __name__ == "__main__":
-
     for img in os.listdir(folder_loc):
         img2 = os.path.join(folder_loc, img)
         data = tracking(img2)
