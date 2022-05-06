@@ -21,6 +21,7 @@ def receive_file(request):
             with open(temp_file_path, 'wb') as output_file:
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
+            #todo: preprocessing
             d = gt_local.tracking(file_path)
             print(d)
 
