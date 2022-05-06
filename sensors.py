@@ -39,7 +39,7 @@ while True:
 			dt = datetime.now()
 		ret, image = camera.read() 
 		# cv2.imwrite(("./tempPictures/" + str(dt) +"/sensorTest" + str(version) + ".jpg"), image) 
-		cv2.imwrite(("./images/" + str(dt) + "_" + str(version) + ".jpg"), image) 
+		cv2.imwrite(("/home/shamispi/Desktop/images/" + str(dt) + "_" + str(version) + ".jpg"), image) 
 		version += 1
 		newImages = 1
 	elif (0 == doorSensor.value):
