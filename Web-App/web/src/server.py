@@ -23,22 +23,21 @@ cursor = db.cursor()
 
 
 def get_items_count(camera, item):
-    cursor.execute("SELECT * FROM Items WHERE user LIKE '%{}%' AND item_name LIKE '%{}%';".format(camera, item))
+    cursor.execute("SELECT item_count FROM Items WHERE (Items.camera_id = '{}' AND Items.item_name='{}')".format(camera, item))
     record = cursor.fetchone()
     if record is None:
         return 0
-    return record[4]
-
-
-def get_user_helper(user, item):
-    pass
+    for item in record:
+        print(item)
+    return record[0] #  Is this right?
 
 
 """---------------------Home-Page---------------------------------"""
 
 
 def get_home(req):
-    return FileResponse('home.html')
+    # return FileResponse('home.html')
+    return Response('Hello World!')
 
 
 """---------------------User-Routes-------------------------------"""
@@ -46,19 +45,14 @@ def get_home(req):
 
 def add_user(req):  # /add_user/{user_id}
     id_user = req.matchdict['user_id']
-
-    query = "INSERT INTO Users (username, created_at) VALUES (%s, %s)"
-    values = [
-        (id_user, datetime.datetime.now()),
-    ]
-    cursor.executemany(query, values)
+    cursor.execute("INSERT INTO Users (username) VALUES ('{}')".format(id_user))
     db.commit()
+    return Response('added {}'.format(id_user))
 
 
 def drop_user(req): # FIXME: needs a route
     id_user = req.matchdict['user_id']
-    query = "DROP {} FROM Users".format(id_user)  # FIXME : drop from cameras and items
-    cursor.executeone(query)
+    cursor.execute("Delete FROM Users where Users.username='{}'".format(id_user))
     db.commit()
 
 
@@ -70,13 +64,9 @@ def add_camera(req):  #/add_camera/{camera_id}/{user_id'/'{location_id}
     id_user = req.matchdict['user_id']
     id_location = req.matchdict['location_id']
 
-
-    query = "INSERT INTO Cameras (camera_id, user, location, created_at) VALUES (%s, %s, %s %s)"
-    values = [
-        (id_camera, id_user, id_location, datetime.datetime.now()),
-    ]
-    cursor.executeone(query, values)
+    cursor.execute("INSERT INTO Cameras (camera_id, user, location) VALUES ('{}', '{}', '{}')".format(id_camera, id_user, id_location))
     db.commit()
+    return Response('add {}'.format(id_camera))
 
 
 def drop_camera(req): # FIXME: write function
@@ -85,7 +75,7 @@ def drop_camera(req): # FIXME: write function
 
 """---------------------Items-Routes------------------------------"""
 
-
+# add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def add_item(req):  # /add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
     id_camera = req.matchdict['camera_id']
     id_item = req.matchdict['item_name']
@@ -94,29 +84,24 @@ def add_item(req):  # /add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 
     the_count = get_items_count(id_camera, id_item)
     if the_count > 0:  # Update Item
-        query = "UPDATE Items SET item_count = {} AND updated_last = {} WHERE item_name = {} AND camera_id = {}".format(the_count+id_count, datetime.datetime.now(),  id_item, id_camera)
-        cursor.executeone(query)
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_count))
         db.commit()
     else:  # Insert Item
-        query = "insert into Items (user, item_name, location, item_count, tags,  updated_last) values (%s, %s,  %s, %s, %s)"
-        values = [
-            ('{}'.format(id_camera), '{}'.format(id_item), '{}'.format(id_count), '{}'.format(id_tags), datetime.datetime.now())
-        ]
-        cursor.executeone(query, values)
+        cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
         db.commit()
+    return Response('add {}'.format(id_item))
 
 
-def get_items(req):  # TODO: test when tables are joined.  # /get/{username}
+def get_items(req):  # /get/{username}
     id_user = req.matchdict['username']
-    cursor.execute("SELECT item_name, item_count, location, tags \
+    cursor.execute("SELECT item_name, item_count, location, tags, Items.updated_last \
                     FROM Users \
                     INNER JOIN Cameras ON Users.username=Cameras.user \
                     INNER JOIN Items ON Cameras.camera_id=Items.camera_id \
-                    WHERE user LIKE '%{}%';".format(id_user))
-    # cursor.execute("SELECT * FROM user WHERE user LIKE '%{}%';".format(id_user))
-    records = cursor.fetchmany()
+                    WHERE user= '{}';".format(id_user))
+    records = cursor.fetchall()
     responses = []
-    for record in records:
+    for record in records:  # Fix this stuff probably
         time_data = record[5].strftime("%d-%b-%Y (%H:%M:S.%f)")
         response = {
             'item_name': record[2],
@@ -128,52 +113,53 @@ def get_items(req):  # TODO: test when tables are joined.  # /get/{username}
     return responses
 
 
-def remove_item(req):  # do I need this? FIXME /remove_item/{camera_id}/{item_name}/{item_count}
-    id_user = req.matchdict['username']
+def remove_item(req):  # /remove_item/{camera_id}/{item_name}/{item_count}
+    id_camera = req.matchdict['camera_id']
     id_item = req.matchdict['item_name']
-    id_location = req.matchdict['location']
     id_count = req.matchdict['item_count']
 
-    the_count = get_items_count(id_user, id_item)
-    if the_count > id_count:  # Delete Item
-        query = "DELETE FROM Items WHERE item_name = {} AND user = {}".format(id_item, id_user);
-        cursor.executeone(query)
+    the_count = get_items_count(id_camera, id_item)
+    the_count = the_count - int(id_count)
+    print("the count: ", the_count)
+    if int(the_count) <= 0:  # Delete Item
+        cursor.execute("DELETE FROM Items WHERE (item_name = '{}' AND camera_id = '{}')".format(id_item, id_camera))
         db.commit()
     else:  # Update Item
-        query = "UPDATE Items SET item_count = {} AND created_at = {} WHERE item_name = {} AND user = {}".format(the_count-id_count, datetime.datetime.now(),  id_item, id_user)
-        cursor.executeone(query)
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(str(the_count), id_item, id_camera))
         db.commit()
+    return Response('removed {}'.format(id_item))
 
 
 ''' Route Configurations '''
 if __name__ == '__main__':
     print("Starting web server...")
-    config = Configurator()
+    # config = Configurator()
+    with Configurator() as config:
+        config.include('pyramid_jinja2')
+        config.add_jinja2_renderer('.html')
 
-    # config.include('pyramid_jinja2')
-    # config.add_jinja2_renderer('.html')
+        config.add_route('get_home', '/')
+        config.add_view(get_home, route_name='get_home')
 
-    config.add_route('get_home', '/')
-    config.add_view(get_home, route_name='get_home')
+        config.add_route('add_user', '/add_user/{user_id}')
+        config.add_view(add_user, route_name='add_user')
 
-    config.add_route('add_user', '/add_user/{user_id}')
-    config.add_view(add_item, route_name='add_user')
+        config.add_route('add_camera', '/add_camera/{camera_id}/{user_id}/{location_id}')
+        config.add_view(add_camera, route_name='add_camera')
 
-    config.add_route('add_camera', '/add_camera/{camera_id}/{user_id}/{location_id}')
-    config.add_view(add_camera, route_name='add_camera')
+        config.add_route('add_item', '/add_item/{camera_id}/{item_name}/{item_count}/{item_tags}')
+        config.add_view(add_item, route_name='add_item')
 
-    config.add_route('add_item', '/add_item/{camera_id}/{item_name}/{item_count}/{item_tags}')
-    config.add_view(add_item, route_name='add_item')
+        config.add_route('get_items', '/get/{username}/')
+        config.add_view(get_items, route_name='get_items')
 
-    config.add_route('get_items', '/get/{username}/')
-    config.add_view(get_items, route_name='get_items')
+        config.add_route('remove_item', '/remove_item/{camera_id}/{item_name}/{item_count}')
+        config.add_view(remove_item, route_name='remove_item')
 
-    config.add_route('remove_item', '/remove_item/{camera_id}/{item_name}/{item_count}')
-    config.add_view(remove_item, route_name='remove_item')
+        config.add_static_view(name='/', path='./public', cache_max_age=3600)
 
-    config.add_static_view(name='/', path='./public', cache_max_age=3600)
+        app = config.make_wsgi_app()
 
-    app = config.make_wsgi_app()
-    server = make_server('0.0.0.0', 6000, app)
-    print('Web server started on: http://0.0.0.0:6000')
+    server = make_server('0.0.0.0', 6543, app)
+    print('Web server started on: http://0.0.0.0:6000/')
     server.serve_forever()
