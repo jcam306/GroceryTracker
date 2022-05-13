@@ -2,3 +2,4 @@ pyramid==1.10
 tqdm
 requests
 clarifai-grpc
+opencv-python-headless
