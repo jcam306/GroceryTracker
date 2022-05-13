@@ -1,4 +1,6 @@
 pyramid==1.10
+mysql.connector
+python-dotenv
 tqdm
 requests
 clarifai-grpc
