@@ -131,10 +131,9 @@ def get_items(req):  # /get/{username}
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
     id_user = req.matchdict['username']
-    cursor.execute("SELECT item_name, item_count, location, tags, Items.updated_last \
-                    FROM Users \
+    cursor.execute("Select item_name, item_count, location, tags From Users \
                     INNER JOIN Cameras ON Users.username=Cameras.user \
-                    INNER JOIN Items ON Cameras.camera_id=Items.camera_id \
+                    INNER JOIN ITEMS ON Cameras.camera_id=Items.camera_id \
                     WHERE user= '{}';".format(id_user))
     records = cursor.fetchall()
     responses = []
