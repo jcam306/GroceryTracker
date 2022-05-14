@@ -133,7 +133,7 @@ def get_items(req):  # /get/{username}
     id_user = req.matchdict['username']
     cursor.execute("Select item_name, item_count, location, tags From Users \
                     INNER JOIN Cameras ON Users.username=Cameras.user \
-                    INNER JOIN ITEMS ON Cameras.camera_id=Items.camera_id \
+                    INNER JOIN Items ON Cameras.camera_id=Items.camera_id \
                     WHERE user= '{}';".format(id_user))
     records = cursor.fetchall()
     responses = []
