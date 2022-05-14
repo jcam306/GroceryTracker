@@ -131,23 +131,26 @@ def get_items(req):  # /get/{username}
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
     id_user = req.matchdict['username']
-    cursor.execute("Select item_name, item_count, location, tags From Users \
+    cursor.execute("SELECT item_name, item_count, location, tags \
+                    FROM Users \
                     INNER JOIN Cameras ON Users.username=Cameras.user \
                     INNER JOIN Items ON Cameras.camera_id=Items.camera_id \
                     WHERE user= '{}';".format(id_user))
     records = cursor.fetchall()
     responses = []
     for record in records:  # Fix this stuff probably
-        time_data = record[5].strftime("%d-%b-%Y (%H:%M:S.%f)")
+
         response = {
-            'item_name': record[2],
-            'location': record[3],
-            'item_count': record[4],
-            'updated_last': time_data
+            'item_name': record[0],
+            'location': record[1],
+            'item_count': record[2],
+            'tags': record[3]
         }
+        print(response)
         responses.append(response)
-    db.close()
-    return responses
+    # print(responses)
+    return Response(responses)
+
 
 
 def remove_item(req):  # /remove_item/{camera_id}/{item_name}/{item_count}
@@ -221,8 +224,8 @@ if __name__ == '__main__':
         config.add_route('add_item', '/add_item/{camera_id}/{item_name}/{item_count}/{item_tags}')
         config.add_view(add_item, route_name='add_item')
 
-        config.add_route('get_items', '/get/{username}/')
-        config.add_view(get_items, route_name='get_items')
+        config.add_route('get_items', '/get/{username}')
+        config.add_view(get_items, route_name='get_items', renderer='json')
 
         config.add_route('remove_item', '/remove_item/{camera_id}/{item_name}/{item_count}')
         config.add_view(remove_item, route_name='remove_item')
