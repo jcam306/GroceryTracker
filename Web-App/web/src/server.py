@@ -1,3 +1,4 @@
+import json
 from wsgiref.simple_server import make_server
 from pyramid.config import Configurator
 from pyramid.renderers import render_to_response
@@ -105,14 +106,14 @@ def get_items(req):  # /get/{username}
 
         response = {
             'item_name': record[0],
-            'location': record[1],
-            'item_count': record[2],
+            'item_count': record[1],
+            'location': record[2],
             'tags': record[3]
         }
         print(response)
         responses.append(response)
     # print(responses)
-    return Response(responses)
+    return Response(json.dumps(responses))
 
 
 def remove_item(req):  # /remove_item/{camera_id}/{item_name}/{item_count}
