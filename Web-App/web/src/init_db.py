@@ -10,26 +10,26 @@ load_dotenv('credentials.env')
 
 db_user = os.environ['MYSQL_USER']
 db_pass = os.environ['MYSQL_PASSWORD']
-# db_name = os.environ['MYSQL_DATABASE']
-# db_host = os.environ['MYSQL_HOST']  # must 'localhost' when running this script outside of Docker
+db_name = os.environ['MYSQL_DATABASE']
+db_host = os.environ['MYSQL_HOST']  # must 'localhost' when running this script outside of Docker
 
 # Connect to the database
-db = mysql.connect(user=db_user, password=db_pass)#, host=db_host, database=db_name)
+db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
 cursor = db.cursor()
 
 # # CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!!
-cursor.execute("drop database if exists GroceryTracker;")
-# cursor.execute("drop table if exists Users;")
-# cursor.execute("drop table if exists Cameras;")
-# cursor.execute("drop table if exists Items;")
+# cursor.execute("drop database if exists GroceryTracker;")
+#cursor.execute("drop table if exists Users;")
+#cursor.execute("drop table if exists Cameras;")
+#cursor.execute("drop table if exists Items;")
 
-cursor.execute("""
-    CREATE Database GroceryTracker;
-    """)
+#cursor.execute("""
+#    CREATE Database GroceryTracker;
+#    """)
 
-cursor.execute("""
-    Use GroceryTracker;
-    """)
+#cursor.execute("""
+#    Use GroceryTracker;
+#    """)
 
 
 try:
@@ -62,9 +62,9 @@ try:
     CREATE TABLE Items (
       id                   integer  AUTO_INCREMENT PRIMARY KEY,
       camera_id            VARCHAR(10) NOT NULL,
-      item_name            VARCHAR(30) NOT NULL, 
-      item_count           Integer NOT NULL, 
-      tags                 VARCHAR(100),  
+      item_name            VARCHAR(30) NOT NULL,
+      item_count           Integer NOT NULL,
+      tags                 VARCHAR(100),
       update_last          TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   """)
@@ -136,9 +136,22 @@ cursor.execute("""
 db.commit()
 
 # # helpers
-# cursor.execute("""
-#     SELECT * FROM Items WHERE (user = 'Joshua' AND item_name = 'apple');
-# """)
+cursor.execute("""
+     SELECT * FROM Items ;
+ """)
+records = cursor.fetchall()
+responses = []
+for record in records:  # Fix this stuff probably
+    time_data = record[5].strftime("%d-%b-%Y (%H:%M:S.%f)")
+    response = {
+     'item_name': record[2],
+     'location': record[3],
+     'item_count': record[4],
+     'updated_last': time_data
+    }
+    responses.append(response)
+print(responses)
+db.close()
 #
 # #get items
 # cursor.execute("""
