@@ -7,6 +7,8 @@ import mysql.connector as mysql
 import datetime
 import os
 from dotenv import load_dotenv
+import shutil
+import gt_local
 
 
 load_dotenv('credentials.env')
@@ -15,61 +17,85 @@ db_pass = os.environ['MYSQL_PASSWORD']
 db_name = os.environ['MYSQL_DATABASE']
 db_host = os.environ['MYSQL_HOST']  # must 'localhost' when running this script outside of Docker
 
-# Connect to the database
-db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
-cursor = db.cursor()
+
 
 """---------------------Helper-Functions-------------------------"""
 
+def add_item_local(id_camera,id_item,id_count,id_tags):
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
+    the_count = get_items_count(id_camera, id_item)
+    if the_count > 0:  # Update Item
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_count))
+        db.commit()
+    else:  # Insert Item
+        cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
+        db.commit()
+    db.close()
+    return Response('add {}'.format(id_item))
+
 
 def get_items_count(camera, item):
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     cursor.execute("SELECT item_count FROM Items WHERE (Items.camera_id = '{}' AND Items.item_name='{}')".format(camera, item))
     record = cursor.fetchone()
     if record is None:
         return 0
     for item in record:
         print(item)
+    db.close()
     return record[0] #  Is this right?
 
 
 """---------------------Home-Page---------------------------------"""
 
 
-import os
-import shutil
-import gt_local
-
 def get_home(req):
-    # return FileResponse('home.html')
-    return Response('Hello World!')
+    return FileResponse('home.html')
+    # return Response('Hello World!')
 
 
 """---------------------User-Routes-------------------------------"""
 
 
 def add_user(req):  # /add_user/{user_id}
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     id_user = req.matchdict['user_id']
     cursor.execute("INSERT INTO Users (username) VALUES ('{}')".format(id_user))
     db.commit()
+    db.close()
     return Response('added {}'.format(id_user))
 
 
 def drop_user(req): # FIXME: needs a route
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     id_user = req.matchdict['user_id']
     cursor.execute("Delete FROM Users where Users.username='{}'".format(id_user))
     db.commit()
+    db.close()
 
 
 """---------------------Camera-Routes-----------------------------"""
 
 
 def add_camera(req):  #/add_camera/{camera_id}/{user_id'/'{location_id}
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     id_camera = req.matchdict['camera_id']
     id_user = req.matchdict['user_id']
     id_location = req.matchdict['location_id']
 
     cursor.execute("INSERT INTO Cameras (camera_id, user, location) VALUES ('{}', '{}', '{}')".format(id_camera, id_user, id_location))
     db.commit()
+    db.close()
     return Response('add {}'.format(id_camera))
 
 
@@ -81,6 +107,9 @@ def drop_camera(req): # FIXME: write function
 
 # add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def add_item(req):  # /add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     id_camera = req.matchdict['camera_id']
     id_item = req.matchdict['item_name']
     id_count = req.matchdict['item_count']
@@ -93,10 +122,14 @@ def add_item(req):  # /add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
     else:  # Insert Item
         cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
         db.commit()
+    db.close()
     return Response('add {}'.format(id_item))
 
 
 def get_items(req):  # /get/{username}
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     id_user = req.matchdict['username']
     cursor.execute("SELECT item_name, item_count, location, tags, Items.updated_last \
                     FROM Users \
@@ -114,10 +147,14 @@ def get_items(req):  # /get/{username}
             'updated_last': time_data
         }
         responses.append(response)
+    db.close()
     return responses
 
 
 def remove_item(req):  # /remove_item/{camera_id}/{item_name}/{item_count}
+    # Connect to the database
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
+    cursor = db.cursor()
     id_camera = req.matchdict['camera_id']
     id_item = req.matchdict['item_name']
     id_count = req.matchdict['item_count']
@@ -131,9 +168,14 @@ def remove_item(req):  # /remove_item/{camera_id}/{item_name}/{item_count}
     else:  # Update Item
         cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(str(the_count), id_item, id_camera))
         db.commit()
+    db.close()
     return Response('removed {}'.format(id_item))
 
+"""
+File transfer functions
 
+"""
+# add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def receive_file(request):
     if request.method == "POST":
         images = request.POST.getall('images')
@@ -149,6 +191,11 @@ def receive_file(request):
             #todo: preprocessing
             d = gt_local.tracking(file_path)
             print(d)
+            tags = ''
+            for tag in d:
+                temp = tag.name + ': '+tag.value+', '
+                tags = tags+temp
+            add_item_local('0000000000',d[0].name,1,tags)
 
     #Todo:store results in db
     return {'error':'none'}
@@ -183,7 +230,7 @@ if __name__ == '__main__':
 
         config.add_route('file_transfer', '/transfer')
         config.add_view(receive_file,route_name = 'file_transfer',renderer='json')
-        
+
         app = config.make_wsgi_app()
 
     server = make_server('0.0.0.0', 6000, app)

@@ -39,7 +39,7 @@ def img_pro(img):
     cv.waitKey(0)
     cv.destroyAllWindows()
     print('Total number of contours detected: ' + str(len(contours)))
-    
+
 
     result = image[y:y+h, x:x+w]
     cv.imwrite("Result.png", result)
@@ -79,7 +79,7 @@ def tracking(img):
     # Since we have one input, one output will exist here
     output = post_model_outputs_response.outputs[0]
 
-    return output.data.concepts[0]
+    return output.data.concepts
     #print("Outcome:")
     #print("%s %.3f" % (output.data.concepts[0].name, output.data.concepts[0].value))
 

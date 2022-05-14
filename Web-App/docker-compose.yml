@@ -7,9 +7,19 @@ services:
       context: ./web
     ports:
       - 80:6000 # host : container
+    env_file: ./credentials.env
     volumes:
       - ./web/src:/app
     container_name: Grocery-tracker-portal
 
+  db-server:
+    image: mysql:latest
+    restart: always
+    env_file: ./credentials.env
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db:/var/lib/mysql
+    container_name: GroceryTracker
 volumes:
   db:

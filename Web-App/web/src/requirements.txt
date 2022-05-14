@@ -1,5 +1,6 @@
 pyramid==1.10
-mysql.connector
+pyramid_jinja2
+mysql-connector-python
 python-dotenv
 tqdm
 requests
