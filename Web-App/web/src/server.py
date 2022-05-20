@@ -233,10 +233,12 @@ if __name__ == '__main__':
         config.add_route('remove_item', '/remove_item/{camera_id}/{item_name}/{item_count}')
         config.add_view(remove_item, route_name='remove_item')
 
-        config.add_static_view(name='/', path='./public', cache_max_age=3600)
-
         config.add_route('file_transfer', '/transfer')
         config.add_view(receive_file,route_name = 'file_transfer',renderer='json')
+        
+        config.add_static_view(name='/', path='./public', cache_max_age=3600)
+
+
 
         app = config.make_wsgi_app()
 
