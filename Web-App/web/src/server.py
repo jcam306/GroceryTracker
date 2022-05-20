@@ -205,7 +205,10 @@ def receive_file(request):
             for tag in d:
                 temp = tag.name + ': '+str(tag.value)+', '
                 tags = tags+temp
-            add_item_local('0000000000',d[0].name,1,tags)
+            print(tags)
+            print(len(tags))
+            l = min(len(tags),98)
+            add_item_local('0000000000',d[0].name,1,tags[:l])
 
     #Todo:store results in db
     return {'error':'none'}
