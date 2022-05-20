@@ -184,6 +184,7 @@ def receive_file(request):
         images = request.POST.getall('images')
         for im in images:
             name = im.filename
+            print(name)
             f = im.file
             file_path = os.path.join('/app/public/images/received', name)
             temp_file_path = file_path + '~'
