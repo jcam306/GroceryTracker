@@ -188,13 +188,16 @@ def receive_file(request):
             print(name)
             f = im.file
             file_path = os.path.join('/app/public/images/received', name)
+            folder_loc = '/app/public/images/processed_images'
+            if not os.path.exists(folder_loc):
+                os.mkdir(folder_loc)
             temp_file_path = file_path + '~'
             f.seek(0)
             with open(temp_file_path, 'wb') as output_file:
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
             #todo: preprocessing
-            x=gt_local.img_pro(file_path,name)
+            x=gt_local.img_pro(file_path,name, folder_loc)
             file_path = os.path.join('/app/public/images/processed_images', name)
             d = gt_local.tracking(file_path)
             print(d)
@@ -235,7 +238,7 @@ if __name__ == '__main__':
 
         config.add_route('file_transfer', '/transfer')
         config.add_view(receive_file,route_name = 'file_transfer',renderer='json')
-        
+
         config.add_static_view(name='/', path='./public', cache_max_age=3600)
 
 

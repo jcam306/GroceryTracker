@@ -22,7 +22,7 @@ folder_loc2 = r'C:\Users\ihyun\Desktop\GroceryTracker\Web-App\web\src\public\pro
 MODEL_VERSION_ID = ''
 
 
-def img_pro(img, name):
+def img_pro(img, name,fol):
     image = cv.imread(img, 1)
     gray = cv.cvtColor(image.copy(), cv.COLOR_BGR2GRAY)
     blur = cv.GaussianBlur(gray, (11, 11), 0)
@@ -42,7 +42,7 @@ def img_pro(img, name):
     #print('Total number of contours detected: ' + str(len(contours)))
     result = image[y:y+h, x:x+w]
     # cv.imwrite("Result.png", result)
-    file_path = os.path.join(folder_loc2, name)
+    file_path = os.path.join(fol, name)
     #print(file_path)
     cv.imwrite(file_path, result)
     return x
