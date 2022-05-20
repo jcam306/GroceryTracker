@@ -14,7 +14,7 @@ db_name = os.environ['MYSQL_DATABASE']
 db_host = os.environ['MYSQL_HOST']  # must 'localhost' when running this script outside of Docker
 
 # Connect to the database
-db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name, port=3307)
+db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name, port=3306)
 cursor = db.cursor()
 
 # # CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!! CAUTION!!!
