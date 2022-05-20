@@ -203,7 +203,7 @@ def receive_file(request):
             print(d)
             tags = ''
             for tag in d:
-                temp = tag.name + ': '+tag.value+', '
+                temp = tag.name + ': '+str(tag.value)+', '
                 tags = tags+temp
             add_item_local('0000000000',d[0].name,1,tags)
 
