@@ -88,7 +88,7 @@ def drop_user(req): # FIXME: needs a route
 
 def add_camera(req):  #/add_camera/{camera_id}/{user_id'/'{location_id}
     # Connect to the database
-    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name, port=3306)
+    db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name, port=3307)
     cursor = db.cursor()
     id_camera = req.matchdict['camera_id']
     id_user = req.matchdict['user_id']
