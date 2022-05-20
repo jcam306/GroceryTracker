@@ -83,7 +83,8 @@ def tracking(img):
     output = post_model_outputs_response.outputs[0]
 
     l = len(output.data.concepts)
-    return output.data.concepts[:min(4,len)]
+    l = min(l,4)
+    return output.data.concepts[:l]
     #print("Outcome:")
     #print("%s %.3f" % (output.data.concepts[0].name, output.data.concepts[0].value))
 
