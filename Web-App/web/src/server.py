@@ -192,7 +192,7 @@ def receive_file(request):
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
             #todo: preprocessing
-            gt_local.img_pro(file_path)
+            x=gt_local.img_pro(file_path,name)
             file_path = os.path.join('/app/public/images/processed_images', name)
             d = gt_local.tracking(file_path)
             print(d)
