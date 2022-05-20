@@ -28,7 +28,7 @@ def add_item_local(id_camera,id_item,id_count,id_tags):
     cursor = db.cursor()
     the_count = get_items_count(id_camera, id_item)
     if the_count > 0:  # Update Item
-        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_count))
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_camera))
         db.commit()
     else:  # Insert Item
         cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
