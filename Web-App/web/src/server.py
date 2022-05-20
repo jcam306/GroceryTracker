@@ -180,6 +180,7 @@ File transfer functions
 """
 # add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def receive_file(request):
+    print('This is a post request')
     if request.method == "POST":
         images = request.POST.getall('images')
         for im in images:
