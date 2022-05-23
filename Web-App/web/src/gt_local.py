@@ -5,8 +5,14 @@ import os
 from os import listdir
 import cv2 as cv
 import numpy as np
+from elements.yolo import OBJ_DETECTION
 #food-item-v1-recognition
 #food-item-recognition
+
+Object_classes = [ 'banana', 'apple','sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake' ]
+
+Object_colors = list(np.random.rand(80,3)*255)
+Object_detector = OBJ_DETECTION('weights/yolov5s1.pt', Object_classes)
 
 USER_ID = 'sikgaek'
 
@@ -90,6 +96,33 @@ def tracking(img):
     #for concept in output.data.concepts:
     #   print("%s %.2f" % (concept.name, concept.value))
 
+def yolo(img):
+    cap = cv.imread(img)
+    cap = cv.resize(cap, (640, 640))
+    #window_handle = cv.namedWindow("CSI Camera", cv.WINDOW_AUTOSIZE)
+    # Window
+
+    # detection process
+    objs = Object_detector.detect(cap)
+
+    data = []
+
+    # plotting
+    for obj in objs:
+        # print(obj)
+        label = obj['label']
+        score = obj['score']
+        [(xmin,ymin),(xmax,ymax)] = obj['bbox']
+        color = Object_colors[Object_classes.index(label)]
+        cap = cv.rectangle(cap, (xmin,ymin), (xmax,ymax), color, 2) 
+        cap = cv.putText(cap, f'{label} ({str(score)})', (xmin,ymin), cv.FONT_HERSHEY_SIMPLEX , 0.75, color, 1, cv.LINE_AA)
+        data.append(label)
+
+    cv.imshow("CSI Camera", cap)
+    cv.waitKey(0)
+    print(data)
+    cv.destroyAllWindows()
+
 def dup_img(x):
     prev = []
     for img in os.listdir(folder_loc2):
@@ -114,16 +147,18 @@ def dup_img(x):
         x2 = x
 
 if __name__ == "__main__":
-    for img in os.listdir(folder_loc):
-        if img == "received":
-            continue
-        img2 = os.path.join(folder_loc, img)
-        x = img_pro(img2, img)
-        dup_img(x)
-        img3 = os.path.join(folder_loc2, img)
-        #print(img3)
-        try:
-            data = tracking(img3)
-        except:
-            continue
-        print("%s %.3f" % (data.name, data.value))
+    #for img in os.listdir(folder_loc):
+    img2 = os.path.join(folder_loc, "fruits.jpg")
+    data = yolo(img2)
+    '''if img == "received":
+        continue
+    img2 = os.path.join(folder_loc, img)
+    x = img_pro(img2, img)
+    dup_img(x)
+    img3 = os.path.join(folder_loc2, img)
+    #print(img3)
+    try:
+        data = tracking(img3)
+    except:
+        continue
+    print("%s %.3f" % (data.name, data.value))'''
