@@ -28,7 +28,7 @@ folder_loc2 = r'C:\Users\ihyun\Desktop\GroceryTracker\Web-App\web\src\public\pro
 MODEL_VERSION_ID = ''
 
 
-def img_pro(img, name):
+def img_pro(img, name,fol):
     image = cv.imread(img, 1)
     gray = cv.cvtColor(image.copy(), cv.COLOR_BGR2GRAY)
     blur = cv.GaussianBlur(gray, (11, 11), 0)
@@ -48,7 +48,7 @@ def img_pro(img, name):
     #print('Total number of contours detected: ' + str(len(contours)))
     result = image[y:y+h, x:x+w]
     # cv.imwrite("Result.png", result)
-    file_path = os.path.join(folder_loc2, name)
+    file_path = os.path.join(fol, name)
     #print(file_path)
     cv.imwrite(file_path, result)
     return x
@@ -88,7 +88,9 @@ def tracking(img):
     # Since we have one input, one output will exist here
     output = post_model_outputs_response.outputs[0]
 
-    return output.data.concepts[0]
+    l = len(output.data.concepts)
+    l = min(l,4)
+    return output.data.concepts[:l]
     #print("Outcome:")
     #print("%s %.3f" % (output.data.concepts[0].name, output.data.concepts[0].value))
 
@@ -162,3 +164,4 @@ if __name__ == "__main__":
     except:
         continue
     print("%s %.3f" % (data.name, data.value))'''
+

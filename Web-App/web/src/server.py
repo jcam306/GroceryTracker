@@ -28,7 +28,7 @@ def add_item_local(id_camera,id_item,id_count,id_tags):
     cursor = db.cursor()
     the_count = get_items_count(id_camera, id_item)
     if the_count > 0:  # Update Item
-        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_count))
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_camera))
         db.commit()
     else:  # Insert Item
         cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
@@ -180,27 +180,35 @@ File transfer functions
 """
 # add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def receive_file(request):
+    print('This is a post request')
     if request.method == "POST":
         images = request.POST.getall('images')
         for im in images:
             name = im.filename
+            print(name)
             f = im.file
             file_path = os.path.join('/app/public/images/received', name)
+            folder_loc = '/app/public/images/processed_images'
+            if not os.path.exists(folder_loc):
+                os.mkdir(folder_loc)
             temp_file_path = file_path + '~'
             f.seek(0)
             with open(temp_file_path, 'wb') as output_file:
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
             #todo: preprocessing
-            gt_local.img_pro(file_path)
+            x=gt_local.img_pro(file_path,name, folder_loc)
             file_path = os.path.join('/app/public/images/processed_images', name)
             d = gt_local.tracking(file_path)
             print(d)
             tags = ''
             for tag in d:
-                temp = tag.name + ': '+tag.value+', '
+                temp = tag.name + ': '+str(tag.value)+', '
                 tags = tags+temp
-            add_item_local('0000000000',d[0].name,1,tags)
+            print(tags)
+            print(len(tags))
+            l = min(len(tags),98)
+            add_item_local('0000000000',d[0].name,1,tags[:l])
 
     #Todo:store results in db
     return {'error':'none'}
@@ -231,10 +239,12 @@ if __name__ == '__main__':
         config.add_route('remove_item', '/remove_item/{camera_id}/{item_name}/{item_count}')
         config.add_view(remove_item, route_name='remove_item')
 
-        config.add_static_view(name='/', path='./public', cache_max_age=3600)
-
         config.add_route('file_transfer', '/transfer')
         config.add_view(receive_file,route_name = 'file_transfer',renderer='json')
+
+        config.add_static_view(name='/', path='./public', cache_max_age=3600)
+
+
 
         app = config.make_wsgi_app()
 
