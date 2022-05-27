@@ -210,7 +210,7 @@ def receive_file(request):
             l = min(len(tags),98)
             add_item_local('0000000000',d[0].name,1,tags[:l])
 
-    #Todo:store results in db
+    # Todo: clear folder
     return {'error':'none'}
 
 ''' Route Configurations '''

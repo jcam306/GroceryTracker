@@ -108,6 +108,7 @@ def yolo(img):
     objs = Object_detector.detect(cap)
 
     data = []
+    boxes = []
 
     # plotting
     for obj in objs:
@@ -116,14 +117,16 @@ def yolo(img):
         score = obj['score']
         [(xmin,ymin),(xmax,ymax)] = obj['bbox']
         color = Object_colors[Object_classes.index(label)]
-        cap = cv.rectangle(cap, (xmin,ymin), (xmax,ymax), color, 2) 
+        cap = cv.rectangle(cap, (xmin,ymin), (xmax,ymax), color, 2)
         cap = cv.putText(cap, f'{label} ({str(score)})', (xmin,ymin), cv.FONT_HERSHEY_SIMPLEX , 0.75, color, 1, cv.LINE_AA)
         data.append(label)
+        boxes.append(ymin)
 
     cv.imshow("CSI Camera", cap)
     cv.waitKey(0)
     print(data)
     cv.destroyAllWindows()
+    return data, boxes
 
 def dup_img(x):
     prev = []
@@ -164,4 +167,3 @@ if __name__ == "__main__":
     except:
         continue
     print("%s %.3f" % (data.name, data.value))'''
-
