@@ -28,7 +28,7 @@ folder_loc2 = r'C:\Users\ihyun\Desktop\GroceryTracker\Web-App\web\src\public\pro
 MODEL_VERSION_ID = ''
 
 
-def img_pro(img, name,fol):
+'''def img_pro(img, name,fol):
     image = cv.imread(img, 1)
     gray = cv.cvtColor(image.copy(), cv.COLOR_BGR2GRAY)
     blur = cv.GaussianBlur(gray, (11, 11), 0)
@@ -51,7 +51,7 @@ def img_pro(img, name,fol):
     file_path = os.path.join(fol, name)
     #print(file_path)
     cv.imwrite(file_path, result)
-    return x
+    return x'''
 
 def tracking(img):
     channel = ClarifaiChannel.get_grpc_channel()
@@ -128,7 +128,26 @@ def yolo(img):
     cv.destroyAllWindows()
     return data, boxes
 
-def dup_img(x):
+def dup(l1, l2):
+    l1.sort()
+    l2.sort()
+    if l1 == l2:
+        return True
+    else:
+        return False
+
+def dir(y1, y2):
+    y1 = np.array(y1)
+    y2 = np.array(y2)
+    y1a = np.mean(y1)
+    y2a = np.mean(y2)
+    res = y1a - y2a
+    if res <= 0:
+        return True
+    else:
+        return False
+
+'''def dup_img(x):
     prev = []
     for img in os.listdir(folder_loc2):
         img2 = os.path.join(folder_loc2, img)
@@ -142,14 +161,14 @@ def dup_img(x):
         #print(avg, img2)
         if avg < 30:
             os.remove(img2)
-            '''if x - x2 > 0:
+            if x - x2 > 0:
                 mov = "OUT"
             else:
                 mov = "IN"
-            return mov'''
+            return mov
             prev = image
         prev = image
-        x2 = x
+        x2 = x'''
 
 if __name__ == "__main__":
     #for img in os.listdir(folder_loc):
