@@ -183,34 +183,67 @@ def receive_file(request):
     print('This is a post request')
     if request.method == "POST":
         images = request.POST.getall('images')
+        folder_path = '/app/public/images/received'
         for im in images:
             name = im.filename
-            print(name)
             f = im.file
-            file_path = os.path.join('/app/public/images/received', name)
-            folder_loc = '/app/public/images/processed_images'
-            if not os.path.exists(folder_loc):
-                os.mkdir(folder_loc)
+            file_path = os.path.join(folder_path, name)
             temp_file_path = file_path + '~'
             f.seek(0)
             with open(temp_file_path, 'wb') as output_file:
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
-            #todo: preprocessing
-            x=gt_local.img_pro(file_path,name, folder_loc)
-            file_path = os.path.join('/app/public/images/processed_images', name)
-            d = gt_local.tracking(file_path)
-            print(d)
-            tags = ''
-            for tag in d:
-                temp = tag.name + ': '+str(tag.value)+', '
-                tags = tags+temp
-            print(tags)
-            print(len(tags))
-            l = min(len(tags),98)
-            add_item_local('0000000000',d[0].name,1,tags[:l])
+        first_itt = True
+        first_path = None
+        first_data = []
+        first_boxes = []
+        next_path = None
+        next_data = []
+        next_boxes = []
+        direction = 0
+        for file_name in os.listdir(folder_path):
+            file_path = os.path.join(folder_path,file_name)
+            if first_itt:
+                first_itt = False
+                first_path = file_path
+                first_data,first_boxes = gt_local.yolo(first_path)
+            else:
+                next_path = file_path
+                next_data,next_boxes = gt_local.yolo(next_path)
+                if gt_local.dup(first_data,next_data):
+                    temp_dir = gt_local.dir(first_boxes,next_boxes)
+                    if temp_dir:
+                        direction = 1
+                    else:
+                        direction = -1
+                else:
+                    if first_data:
+                        first_data.sort()
+                        old_d = first_data[0]
+                        count = 0
+                        for d in first_data:
+                            if d == old_d:
+                                count+=1
+                            else:
+                                add_item_local('0000000000',old_d,count*direction,'')
+                        add_item_local('0000000000',old_d,count*direction,'')
+                    first_path = next_path
+                    first_data = next_data
+                    first_boxes = next_boxes
+        if first_data:
+            first_data.sort()
+            old_d = first_data[0]
+            count = 0
+            for d in first_data:
+                if d == old_d:
+                    count+=1
+                else:
+                    add_item_local('0000000000',old_d,count*direction,'')
+            add_item_local('0000000000',old_d,count*direction,'')
 
-    # Todo: clear folder
+        #clear folder
+        for file_name in os.listdir(folder_path):
+            os.remove(os.path.join(folder_path, file_name))
     return {'error':'none'}
 
 ''' Route Configurations '''

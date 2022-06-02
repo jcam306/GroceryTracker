@@ -142,7 +142,7 @@ def dir(y1, y2):
     y1a = np.mean(y1)
     y2a = np.mean(y2)
     res = y1a - y2a
-    if res <= 0:
+    if res < 0:
         return True
     else:
         return False
