@@ -23,6 +23,7 @@ db_host = os.environ['MYSQL_HOST']  # must 'localhost' when running this script 
 """---------------------Helper-Functions-------------------------"""
 
 def add_item_local(id_camera,id_item,id_count,id_tags):
+    print('adding '+ id_item + ' count'+str(id_count))
     # Connect to the database
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
@@ -213,9 +214,9 @@ def receive_file(request):
                 if gt_local.dup(first_data,next_data):
                     temp_dir = gt_local.dir(first_boxes,next_boxes)
                     if temp_dir:
-                        direction = 1
-                    else:
                         direction = -1
+                    else:
+                        direction = 1
                 else:
                     if first_data:
                         first_data.sort()
