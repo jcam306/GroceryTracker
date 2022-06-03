@@ -28,7 +28,7 @@ def add_item_local(id_camera,id_item,id_count,id_tags):
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
     the_count = get_items_count(id_camera, id_item)
-    print(thecount,type(thecount))
+    print(the_count,type(the_count))
     if the_count > 0:  # Update Item
         cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_camera))
         db.commit()
