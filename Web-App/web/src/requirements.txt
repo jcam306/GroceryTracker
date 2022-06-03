@@ -6,3 +6,4 @@ tqdm
 requests
 clarifai-grpc
 opencv-python-headless
+torch
