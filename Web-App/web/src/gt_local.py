@@ -122,10 +122,10 @@ def yolo(img):
         data.append(label)
         boxes.append(ymin)
 
-    cv.imshow("CSI Camera", cap)
-    cv.waitKey(0)
+    #cv.imshow("CSI Camera", cap)
+    #cv.waitKey(0)
     print(data)
-    cv.destroyAllWindows()
+    #cv.destroyAllWindows()
     return data, boxes
 
 def dup(l1, l2):
