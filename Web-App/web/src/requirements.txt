@@ -9,6 +9,7 @@ opencv-python-headless
 pandas
 pyyaml
 Pillow
+matplotlib
 
 --find-links https://download.pytorch.org/whl/torch_stable.html
 torch==1.7.0+cpu
