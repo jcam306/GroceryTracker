@@ -27,7 +27,7 @@ class OBJ_DETECTION():
         pred = self.yolo_model(img, augment=False)[0]
         pred = non_max_suppression(pred, conf_thres=0.25, iou_thres=0.45, classes=None)
         items = []
-        
+
         if pred[0] is not None and len(pred):
             for p in pred[0]:
                 score = np.round(p[4].cpu().detach().numpy(),2)
@@ -35,7 +35,7 @@ class OBJ_DETECTION():
                 try:
                     label = self.classes[int(p[5])-46]
                 except:
-                    pass
+                    continue
                 xmin = int(p[0] * main_img.shape[1] /self.input_width)
                 ymin = int(p[1] * main_img.shape[0] /new_height)
                 xmax = int(p[2] * main_img.shape[1] /self.input_width)
