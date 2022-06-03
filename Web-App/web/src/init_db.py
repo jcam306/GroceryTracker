@@ -76,10 +76,10 @@ except:
 # ------------------------------------Populate-DB-with-dummy-data-----------------------------
 
 # users table
-#cursor.execute("""
-#    INSERT INTO Users (username) VALUES ('Joshua')
-#""")
-#db.commit()
+cursor.execute("""
+    INSERT INTO Users (username) VALUES ('Joshua')
+""")
+db.commit()
 #cursor.execute("""
 #    INSERT INTO Users (username) VALUES ('Max')
 #""")
@@ -107,10 +107,10 @@ except:
 
 # Cameras table
 
-#cursor.execute("""
-#    INSERT INTO Cameras (camera_id, user, location) VALUES ('0000000000', 'Joshua', 'fridge')
-#""")
-#db.commit()
+cursor.execute("""
+    INSERT INTO Cameras (camera_id, user, location) VALUES ('0000000000', 'Joshua', 'fridge')
+""")
+db.commit()
 
 
 # items
