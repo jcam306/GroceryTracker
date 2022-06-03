@@ -226,6 +226,8 @@ def receive_file(request):
                                 count+=1
                             else:
                                 add_item_local('0000000000',old_d,count*direction,'')
+                                old_d = d
+                                count = 1
                         add_item_local('0000000000',old_d,count*direction,'')
                     first_path = next_path
                     first_data = next_data
@@ -239,6 +241,8 @@ def receive_file(request):
                     count+=1
                 else:
                     add_item_local('0000000000',old_d,count*direction,'')
+                    old_d = d
+                    count = 1
             add_item_local('0000000000',old_d,count*direction,'')
 
         #clear folder
