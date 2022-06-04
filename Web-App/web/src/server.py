@@ -223,7 +223,7 @@ def receive_file(request):
                     if first_data:
                         first_data.sort()
                         old_d = first_data[0]
-                        count = 0
+                        count = 1
                         for d in first_data:
                             if d == old_d:
                                 count+=1
@@ -238,7 +238,7 @@ def receive_file(request):
         if first_data:
             first_data.sort()
             old_d = first_data[0]
-            count = 0
+            count = 1
             for d in first_data:
                 if d == old_d:
                     count+=1
