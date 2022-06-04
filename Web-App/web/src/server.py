@@ -184,6 +184,7 @@ File transfer functions
 # add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def receive_file(request):
     print('This is a post request')
+    folder_path = '/app/public/images/test_images_gt'
     if request.method == "POST":
         images = request.POST.getall('images')
         folder_path = '/app/public/images/received'
@@ -196,58 +197,61 @@ def receive_file(request):
             with open(temp_file_path, 'wb') as output_file:
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
-        first_itt = True
-        first_path = None
-        first_data = []
-        first_boxes = []
-        next_path = None
-        next_data = []
-        next_boxes = []
-        direction = 0
-        for file_name in os.listdir(folder_path):
-            file_path = os.path.join(folder_path,file_name)
-            if first_itt:
-                first_itt = False
-                first_path = file_path
-                first_data,first_boxes = gt_local.yolo(first_path)
-            else:
-                next_path = file_path
-                next_data,next_boxes = gt_local.yolo(next_path)
-                if gt_local.dup(first_data,next_data):
+    first_itt = True
+    first_path = None
+    first_data = []
+    first_boxes = []
+    next_path = None
+    next_data = []
+    next_boxes = []
+    direction = 1
+    for file_name in os.listdir(folder_path):
+        print(file_name)
+        file_path = os.path.join(folder_path,file_name)
+        if first_itt:
+            first_itt = False
+            first_path = file_path
+            first_data,first_boxes = gt_local.yolo(first_path)
+        else:
+            next_path = file_path
+            next_data,next_boxes = gt_local.yolo(next_path)
+            if gt_local.dup(first_data,next_data):
+                if not first_boxes:
                     temp_dir = gt_local.dir(first_boxes,next_boxes)
                     if temp_dir:
                         direction = -1
                     else:
                         direction = 1
-                else:
-                    if first_data:
-                        first_data.sort()
-                        old_d = first_data[0]
-                        count = 1
-                        for d in first_data:
-                            if d == old_d:
-                                count+=1
-                            else:
-                                add_item_local('0000000000',old_d,count*direction,'')
-                                old_d = d
-                                count = 1
-                        add_item_local('0000000000',old_d,count*direction,'')
-                    first_path = next_path
-                    first_data = next_data
-                    first_boxes = next_boxes
-        if first_data:
-            first_data.sort()
-            old_d = first_data[0]
-            count = 1
-            for d in first_data:
-                if d == old_d:
-                    count+=1
-                else:
+            else:
+                if first_data:
+                    first_data.sort()
+                    old_d = first_data[0]
+                    count = 0
+                    for d in first_data:
+                        if d == old_d:
+                            count+=1
+                        else:
+                            add_item_local('0000000000',old_d,count*direction,'')
+                            old_d = d
+                            count = 1
                     add_item_local('0000000000',old_d,count*direction,'')
-                    old_d = d
-                    count = 1
-            add_item_local('0000000000',old_d,count*direction,'')
+                first_path = next_path
+                first_data = next_data
+                first_boxes = next_boxes
+    if first_data:
+        first_data.sort()
+        old_d = first_data[0]
+        count = 0
+        for d in first_data:
+            if d == old_d:
+                count+=1
+            else:
+                add_item_local('0000000000',old_d,count*direction,'')
+                old_d = d
+                count = 1
+        add_item_local('0000000000',old_d,count*direction,'')
 
+    if request.method == "POST":
         #clear folder
         for file_name in os.listdir(folder_path):
             os.remove(os.path.join(folder_path, file_name))
