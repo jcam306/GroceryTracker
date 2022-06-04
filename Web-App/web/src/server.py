@@ -30,11 +30,11 @@ def add_item_local(id_camera,id_item,id_count,id_tags):
     the_count = get_items_count(id_camera, id_item)
     print(the_count,type(the_count))
     if the_count > 0:  # Update Item
-        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_camera))
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}');".format(the_count+id_count, id_item, id_camera))
         db.commit()
     else:  # Insert Item
-        print("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
-        cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
+        print("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}');".format(id_camera, id_item, id_count, id_tags))
+        cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}');".format(id_camera, id_item, id_count, id_tags))
         db.commit()
     db.close()
     return Response('add {}'.format(id_item))
@@ -44,7 +44,7 @@ def get_items_count(camera, item):
     # Connect to the database
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
-    cursor.execute("SELECT item_count FROM Items WHERE (Items.camera_id = '{}' AND Items.item_name='{}')".format(camera, item))
+    cursor.execute("SELECT item_count FROM Items WHERE (Items.camera_id = '{}' AND Items.item_name='{}');".format(camera, item))
     record = cursor.fetchone()
     if record is None:
         return 0
