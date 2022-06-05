@@ -205,7 +205,7 @@ def receive_file(request):
     next_data = []
     next_boxes = []
     direction = 1
-    for file_name in os.listdir(folder_path):
+    for file_name in sorted(os.listdir(folder_path)):
         print(file_name)
         file_path = os.path.join(folder_path,file_name)
         if first_itt:
