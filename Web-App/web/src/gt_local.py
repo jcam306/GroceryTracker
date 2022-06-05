@@ -120,7 +120,7 @@ def yolo(img):
         cap = cv.rectangle(cap, (xmin,ymin), (xmax,ymax), color, 2)
         cap = cv.putText(cap, f'{label} ({str(score)})', (xmin,ymin), cv.FONT_HERSHEY_SIMPLEX , 0.75, color, 1, cv.LINE_AA)
         data.append(label)
-        boxes.append(ymin)
+        boxes.append((ymax+ymin)/2)
 
     #cv.imshow("CSI Camera", cap)
     #cv.waitKey(0)
