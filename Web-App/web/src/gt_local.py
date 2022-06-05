@@ -125,6 +125,7 @@ def yolo(img):
     #cv.imshow("CSI Camera", cap)
     #cv.waitKey(0)
     print(data)
+    print(boxes)
     #cv.destroyAllWindows()
     return data, boxes
 
