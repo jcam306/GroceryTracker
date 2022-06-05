@@ -223,21 +223,22 @@ def receive_file(request):
                     else:
                         direction = 1
             else:
-                if first_data:
-                    first_data.sort()
-                    old_d = first_data[0]
-                    count = 0
-                    for d in first_data:
-                        if d == old_d:
-                            count+=1
-                        else:
-                            add_item_local('0000000000',old_d,count*direction,'')
-                            old_d = d
-                            count = 1
-                    add_item_local('0000000000',old_d,count*direction,'')
-                first_path = next_path
-                first_data = next_data
-                first_boxes = next_boxes
+                if next_data==[]:
+                    if first_data:
+                        first_data.sort()
+                        old_d = first_data[0]
+                        count = 0
+                        for d in first_data:
+                            if d == old_d:
+                                count+=1
+                            else:
+                                add_item_local('0000000000',old_d,count*direction,'')
+                                old_d = d
+                                count = 1
+                        add_item_local('0000000000',old_d,count*direction,'')
+                    first_path = next_path
+                    first_data = next_data
+                    first_boxes = next_boxes
     if first_data:
         first_data.sort()
         old_d = first_data[0]
