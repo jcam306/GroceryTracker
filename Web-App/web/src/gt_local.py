@@ -9,7 +9,7 @@ from elements.yolo import OBJ_DETECTION
 #food-item-v1-recognition
 #food-item-recognition
 
-Object_classes = [ 'banana', 'apple','sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake' ]
+Object_classes = [ 'banana', 'apple']#,'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake' ]
 
 Object_colors = list(np.random.rand(80,3)*255)
 Object_detector = OBJ_DETECTION('weights/yolov5l.pt', Object_classes)
