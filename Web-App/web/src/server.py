@@ -216,7 +216,7 @@ def receive_file(request):
             next_path = file_path
             next_data,next_boxes = gt_local.yolo(next_path)
             if gt_local.dup(first_data,next_data):
-                if not first_boxes:
+                if first_boxes!= []:
                     temp_dir = gt_local.dir(first_boxes,next_boxes)
                     if temp_dir:
                         direction = 1
