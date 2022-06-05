@@ -219,9 +219,9 @@ def receive_file(request):
                 if not first_boxes:
                     temp_dir = gt_local.dir(first_boxes,next_boxes)
                     if temp_dir:
-                        direction = -1
-                    else:
                         direction = 1
+                    else:
+                        direction = -1
             else:
                 if next_data!=[]:
                     if first_data:
