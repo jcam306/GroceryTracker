@@ -223,7 +223,7 @@ def receive_file(request):
                     else:
                         direction = 1
             else:
-                if next_data==[]:
+                if next_data!=[]:
                     if first_data:
                         first_data.sort()
                         old_d = first_data[0]
