@@ -80,22 +80,22 @@ cursor.execute("""
     INSERT INTO Users (username) VALUES ('Joshua')
 """)
 db.commit()
-cursor.execute("""
-    INSERT INTO Users (username) VALUES ('Max')
-""")
-db.commit()
-cursor.execute("""
-    INSERT INTO Users (username) VALUES ('David')
-""")
-db.commit()
-cursor.execute("""
-    INSERT INTO Users (username) VALUES ('Ihlyun')
-""")
-db.commit()
-cursor.execute("""
-    INSERT INTO Users (username) VALUES ('Jacob')
-""")
-db.commit()
+#cursor.execute("""
+#    INSERT INTO Users (username) VALUES ('Max')
+#""")
+#db.commit()
+#cursor.execute("""
+#    INSERT INTO Users (username) VALUES ('David')
+#""")
+#db.commit()
+#cursor.execute("""
+#    INSERT INTO Users (username) VALUES ('Ihlyun')
+#""")
+#db.commit()
+#cursor.execute("""
+#    INSERT INTO Users (username) VALUES ('Jacob')
+#""")
+#db.commit()
 # cursor.execute("""
 #     Delete FROM Users where Users.username='Joshua'
 # """)
@@ -114,43 +114,43 @@ db.commit()
 
 
 # items
-cursor.execute("""
-    insert into Items (camera_id, item_name, item_count, tags) values ('0000000000', 'apple', 1, 'fruit red')
-""")
-db.commit()
-cursor.execute("""
-    insert into Items (camera_id, item_name, item_count) values ('0000000000', 'Orange', 1)
-""")
-db.commit()
-cursor.execute("""
-    insert into Items (camera_id, item_name, item_count) values ('0000000000', 'milk', 1)
-""")
-db.commit()
-cursor.execute("""
-    insert into Items (camera_id, item_name, item_count, tags) values ('0000000000', 'beer', 6, 'tags')
-""")
-db.commit()
-cursor.execute("""
-    UPDATE Items SET item_count = 4 WHERE (item_name = 'apple' AND camera_id = '0000000000');
-""")
-db.commit()
+#cursor.execute("""
+#    insert into Items (camera_id, item_name, item_count, tags) values ('0000000000', 'apple', 1, 'fruit red')
+#""")
+#db.commit()
+#cursor.execute("""
+#    insert into Items (camera_id, item_name, item_count) values ('0000000000', 'Orange', 1)
+#""")
+#b.commit()
+#cursor.execute("""
+#    insert into Items (camera_id, item_name, item_count) values ('0000000000', 'milk', 1)
+#""")
+#db.commit()
+#cursor.execute("""
+#    insert into Items (camera_id, item_name, item_count, tags) values ('0000000000', 'beer', 6, 'tags')
+#""")
+#db.commit()
+#cursor.execute("""
+#    UPDATE Items SET item_count = 4 WHERE (item_name = 'apple' AND camera_id = '0000000000');
+#""")
+#db.commit()
 
 # # helpers
-cursor.execute("""
-     SELECT * FROM Items ;
- """)
-records = cursor.fetchall()
-responses = []
-for record in records:  # Fix this stuff probably
-    time_data = record[5].strftime("%d-%b-%Y (%H:%M:S.%f)")
-    response = {
-     'item_name': record[2],
-     'location': record[3],
-     'item_count': record[4],
-     'updated_last': time_data
-    }
-    responses.append(response)
-print(responses)
+#cursor.execute("""
+#     SELECT * FROM Items ;
+ #""")
+#records = cursor.fetchall()
+#responses = []
+#for record in records:  # Fix this stuff probably
+#    time_data = record[5].strftime("%d-%b-%Y (%H:%M:S.%f)")
+#    response = {
+#     'item_name': record[2],
+#     'location': record[3],
+#     'item_count': record[4],
+#     'updated_last': time_data
+#    }
+#    responses.append(response)
+#print(responses)
 db.close()
 #
 # #get items
