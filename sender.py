@@ -7,13 +7,9 @@ def sendFolder(folderPath):
 
     for file in os.listdir(folderPath):				# Clear folder on images from previous image capture sequence
         #('images', ("imageName.jpg",open(folderPath + file, 'rb'), 'image/jpg'))
-        newFile = (file, (file,open(folderPath + "/" + file, 'rb'), 'image/jpg'))
+        newFile = ('images', (file,open(folderPath + "/" + file, 'rb'), 'image/jpg'))
         multiple_files.append(newFile)
 
     print(multiple_files)
     r = requests.post(url, files=multiple_files)
     print(r.text)
-
-    # multiple_files = [
-    # ('images', ('apple.jpg', open('./public/images/apple.jpg', 'rb'), 'image/jpg')),
-    # ('images', ('bananas.jpg', open('./public/images/bananas.jpg', 'rb'), 'image/jpg'))]

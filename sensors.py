@@ -13,9 +13,10 @@ doorSensor.pull = digitalio.Pull.UP
 
 camera = cv2.VideoCapture(0)    # Initialize the camera module
 
-version   = 0	# Version number to differentiate images from each other within batches
-newImages = 0	# Flag for if new images were taken (So "door closed" loop doesn't endlessly try to clear image folder)
-newBatch  = 0 	# New batch of images
+version    = 0	# Version number to differentiate images from each other within batches
+versionSet = 0	# Version set number for efficient sorting
+newImages  = 0	# Flag for if new images were taken (So "door closed" loop doesn't endlessly try to clear image folder)
+newBatch   = 0 	# New batch of images
 
 # Getting the current date and time
 dt = datetime.now()
@@ -34,8 +35,12 @@ while True:
 			dt = datetime.now()
 			newBatch = 0
 		ret, image = camera.read() 
-		cv2.imwrite(("/home/shamispi/Desktop/images/" + str(dt) + "_" + str(version) + ".jpg"), image) 
-		version += 1
+		cv2.imwrite(("/home/shamispi/Desktop/images/" + str(dt) + "_" + str(versionSet) + str(version) + ".jpg"), image) 
+		if version == 9:
+			version = 0
+			versionSet += 1
+		else:
+			version += 1
 		newImages = 1
 	elif (0 == doorSensor.value):
 		print("DOOR CLOSED!")
@@ -43,11 +48,12 @@ while True:
 			sender.sendFolder(exten)					# Send images folder to server
 			for file in os.listdir(exten):				# Clear "images" folder from previous batch of images
 				os.remove(os.path.join(exten, file))
-			newImages = 0								# Reset newImages flag 
-			newBatch = 1								# Reset new batch of images flag
-			version  = 0								# Reset version number for new batch
+			newImages  = 0								# Reset newImages flag 
+			newBatch   = 1								# Reset new batch of images flag
+			version    = 0								# Reset version number for new batch
+			versionSet = 0								# Reset version set number for new batch
 	else:
 		print("Sensor NOT DETECTED")
 		camera.release() 
 
-	time.sleep(0.5)
+	time.sleep(0.25)
