@@ -23,15 +23,18 @@ db_host = os.environ['MYSQL_HOST']  # must 'localhost' when running this script 
 """---------------------Helper-Functions-------------------------"""
 
 def add_item_local(id_camera,id_item,id_count,id_tags):
+    print('adding '+ id_item + ' count'+str(id_count))
     # Connect to the database
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
     the_count = get_items_count(id_camera, id_item)
+    print(the_count,type(the_count))
     if the_count > 0:  # Update Item
-        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}')".format(the_count+id_count, id_item, id_camera))
+        cursor.execute("UPDATE Items SET item_count = {} WHERE (item_name = '{}' AND camera_id = '{}');".format(the_count+id_count, id_item, id_camera))
         db.commit()
     else:  # Insert Item
-        cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}')".format(id_camera, id_item, id_count, id_tags))
+        print("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}');".format(id_camera, id_item, id_count, id_tags))
+        cursor.execute("INSERT INTO Items (camera_id, item_name, item_count, tags) VALUES ('{}', '{}', {}, '{}');".format(id_camera, id_item, id_count, id_tags))
         db.commit()
     db.close()
     return Response('add {}'.format(id_item))
@@ -41,7 +44,7 @@ def get_items_count(camera, item):
     # Connect to the database
     db = mysql.connect(user=db_user, password=db_pass, host=db_host, database=db_name)
     cursor = db.cursor()
-    cursor.execute("SELECT item_count FROM Items WHERE (Items.camera_id = '{}' AND Items.item_name='{}')".format(camera, item))
+    cursor.execute("SELECT item_count FROM Items WHERE (Items.camera_id = '{}' AND Items.item_name='{}');".format(camera, item))
     record = cursor.fetchone()
     if record is None:
         return 0
@@ -181,36 +184,78 @@ File transfer functions
 # add_item/{camera_id}/{item_name}/{item_count}/{item_tags}
 def receive_file(request):
     print('This is a post request')
+    folder_path = '/app/public/images/test_images_gt'
     if request.method == "POST":
         images = request.POST.getall('images')
+        folder_path = '/app/public/images/received'
         for im in images:
             name = im.filename
-            print(name)
             f = im.file
-            file_path = os.path.join('/app/public/images/received', name)
-            folder_loc = '/app/public/images/processed_images'
-            if not os.path.exists(folder_loc):
-                os.mkdir(folder_loc)
+            file_path = os.path.join(folder_path, name)
             temp_file_path = file_path + '~'
             f.seek(0)
             with open(temp_file_path, 'wb') as output_file:
                 shutil.copyfileobj(f, output_file)
             os.rename(temp_file_path, file_path)
-            #todo: preprocessing
-            x=gt_local.img_pro(file_path,name, folder_loc)
-            file_path = os.path.join('/app/public/images/processed_images', name)
-            d = gt_local.tracking(file_path)
-            print(d)
-            tags = ''
-            for tag in d:
-                temp = tag.name + ': '+str(tag.value)+', '
-                tags = tags+temp
-            print(tags)
-            print(len(tags))
-            l = min(len(tags),98)
-            add_item_local('0000000000',d[0].name,1,tags[:l])
+    first_itt = True
+    first_path = None
+    first_data = []
+    first_boxes = []
+    next_path = None
+    next_data = []
+    next_boxes = []
+    direction = 1
+    for file_name in sorted(os.listdir(folder_path)):
+        print(file_name)
+        file_path = os.path.join(folder_path,file_name)
+        if first_itt:
+            first_itt = False
+            first_path = file_path
+            first_data,first_boxes = gt_local.yolo(first_path)
+        else:
+            next_path = file_path
+            next_data,next_boxes = gt_local.yolo(next_path)
+            if gt_local.dup(first_data,next_data):
+                if first_boxes!= []:
+                    temp_dir = gt_local.dir(first_boxes,next_boxes)
+                    if temp_dir:
+                        direction = 1
+                    else:
+                        direction = -1
+            else:
+                if next_data!=[]:
+                    if first_data:
+                        first_data.sort()
+                        old_d = first_data[0]
+                        count = 0
+                        for d in first_data:
+                            if d == old_d:
+                                count+=1
+                            else:
+                                add_item_local('0000000000',old_d,count*direction,'')
+                                old_d = d
+                                count = 1
+                        add_item_local('0000000000',old_d,count*direction,'')
+                    first_path = next_path
+                    first_data = next_data
+                    first_boxes = next_boxes
+    if first_data:
+        first_data.sort()
+        old_d = first_data[0]
+        count = 0
+        for d in first_data:
+            if d == old_d:
+                count+=1
+            else:
+                add_item_local('0000000000',old_d,count*direction,'')
+                old_d = d
+                count = 1
+        add_item_local('0000000000',old_d,count*direction,'')
 
-    # Todo: clear folder
+    if request.method == "POST":
+        #clear folder
+        for file_name in os.listdir(folder_path):
+            os.remove(os.path.join(folder_path, file_name))
     return {'error':'none'}
 
 ''' Route Configurations '''

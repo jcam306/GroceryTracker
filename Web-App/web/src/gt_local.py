@@ -9,10 +9,10 @@ from elements.yolo import OBJ_DETECTION
 #food-item-v1-recognition
 #food-item-recognition
 
-Object_classes = [ 'banana', 'apple','sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake' ]
+Object_classes = [ 'banana', 'apple']#,'sandwich', 'orange', 'broccoli', 'carrot', 'hot dog', 'pizza', 'donut', 'cake' ]
 
 Object_colors = list(np.random.rand(80,3)*255)
-Object_detector = OBJ_DETECTION('weights/yolov5s1.pt', Object_classes)
+Object_detector = OBJ_DETECTION('weights/yolov5l.pt', Object_classes)
 
 USER_ID = 'sikgaek'
 
@@ -120,12 +120,13 @@ def yolo(img):
         cap = cv.rectangle(cap, (xmin,ymin), (xmax,ymax), color, 2)
         cap = cv.putText(cap, f'{label} ({str(score)})', (xmin,ymin), cv.FONT_HERSHEY_SIMPLEX , 0.75, color, 1, cv.LINE_AA)
         data.append(label)
-        boxes.append(ymin)
+        boxes.append((ymax+ymin)/2)
 
-    cv.imshow("CSI Camera", cap)
-    cv.waitKey(0)
+    #cv.imshow("CSI Camera", cap)
+    #cv.waitKey(0)
     print(data)
-    cv.destroyAllWindows()
+    print(boxes)
+    #cv.destroyAllWindows()
     return data, boxes
 
 def dup(l1, l2):
@@ -142,7 +143,7 @@ def dir(y1, y2):
     y1a = np.mean(y1)
     y2a = np.mean(y2)
     res = y1a - y2a
-    if res <= 0:
+    if res < 0:
         return True
     else:
         return False

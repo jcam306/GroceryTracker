@@ -6,3 +6,12 @@ tqdm
 requests
 clarifai-grpc
 opencv-python-headless
+pandas
+pyyaml
+Pillow
+matplotlib
+seaborn
+
+--find-links https://download.pytorch.org/whl/torch_stable.html
+torch==1.7.0+cpu
+torchvision==0.8.1+cpu
